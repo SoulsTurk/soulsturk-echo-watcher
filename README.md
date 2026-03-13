@@ -10,13 +10,12 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi-Fi kopmaları) gibi önem
 * **⏱️ Kesinti Süresi (Downtime) Hesaplama:** İnternetiniz geri geldiğinde, tam olarak kaç dakika/saniye çevrimdışı kaldığınızı hesaplar ve bildirime ekler.
 * **🌐 IP & CGNAT Tespiti:** Bağlantı sağlandığında cihazın aldığı yeni IP adresini yakalar. Bu IP'nin **CGNAT (Havuz)** mu yoksa **Gerçek IP** mi olduğunu analiz eder.
 * **🔄 IP Değişim Kontrolü:** Sadece PPPoE oturumunuz mu yenilendi (IP değişti) yoksa fiziksel bir DSL kopması mı yaşandı, rahatlıkla takip edebilirsiniz.
-* **📲 Dahili Güncelleme Sistemi:** Menü üzerinden tek tuşla GitHub'daki en güncel sürüme kendini otomatik olarak günceller (Tıpkı KZM gibi!).
+* **📲 Dahili Güncelleme Sistemi:** Menü üzerinden tek tuşla GitHub'daki en güncel sürüme kendini otomatik olarak günceller.
 * **🛠️ Kullanışlı Arayüz:** Telegram API, başlatma, durdurma ve test işlemlerini SSH üzerinden kolayca yapabileceğiniz interaktif bir konsol menüsüne sahiptir.
 
-## 🚀 Kurulum
+## 🚀 Kurulum (Tek Tıkla)
 
-Cihazınıza SSH ile bağlanın ve aşağıdaki komut bloğunu tek seferde kopyalayıp yapıştırın. Bu işlem dosyayı oluşturacak ve çalıştırma izni verecektir:
+Cihazınıza SSH ile bağlanın ve aşağıdaki komut bloğunu tek seferde kopyalayıp terminale yapıştırın. Bu işlem gerekli klasörleri oluşturacak, betiğin en güncel halini indirecek ve menüyü otomatik olarak başlatacaktır:
 
 ```bash
-# Kurulum komutları yakında buraya eklenecek! 
-# (Not: İsterseniz betiği wget komutuyla doğrudan çekecek bir indirme linki de koyabiliriz)
+mkdir -p /opt/lib/opkg && curl -sL "[https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh](https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh)" -o /opt/lib/opkg/soulsturkechowatcher.sh && chmod +x /opt/lib/opkg/soulsturkechowatcher.sh && /opt/lib/opkg/soulsturkechowatcher.sh
