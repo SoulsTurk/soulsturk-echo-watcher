@@ -18,4 +18,7 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi-Fi kopmaları) gibi önem
 Cihazınıza SSH ile bağlanın ve aşağıdaki komut bloğunu tek seferde kopyalayıp terminale yapıştırın. Bu işlem gerekli klasörleri oluşturacak, betiğin en güncel halini indirecek ve menüyü otomatik olarak başlatacaktır:
 
 ```bash
-mkdir -p /opt/lib/opkg && curl -sL "[https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh](https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh)" -o /opt/lib/opkg/soulsturkechowatcher.sh && chmod +x /opt/lib/opkg/soulsturkechowatcher.sh && /opt/lib/opkg/soulsturkechowatcher.sh
+mkdir -p /opt/lib/opkg && curl -fsSL https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh \
+-o /opt/lib/opkg/soulsturkechowatcher.sh && \
+chmod +x /opt/lib/opkg/soulsturkechowatcher.sh && \
+/opt/lib/opkg/soulsturkechowatcher.sh
