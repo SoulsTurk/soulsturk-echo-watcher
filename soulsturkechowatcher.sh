@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # ============================================
-# SOULSTURK ECHO WATCHER - PRO İZLEYİCİ (v1.2)
+# SOULSTURK ECHO WATCHER - PRO İZLEYİCİ (v1.3)
 # ============================================
 
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.2"
+SCRIPT_VERSION="v1.3"
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
 # --- Renkler ---
@@ -27,6 +27,7 @@ CONF_DIR="/opt/etc/soulsturkechowatcher"
 CONF_FILE="$CONF_DIR/soulsturkechowatcher.conf"
 INIT_FILE="/opt/etc/init.d/S99soulsturkechowatcher"
 LOCK_FILE="/tmp/soulsturkechowatcher.lock"
+MENU_LOCK_FILE="/tmp/soulsturkechowatcher_menu.lock"
 LAST_LOG_FILE="/tmp/soulsturkechowatcher.lastlog"
 STATE_FILE="/tmp/soulsturkechowatcher.state"
 LAST_IP_FILE="/tmp/soulsturkechowatcher.lastip"
@@ -84,9 +85,7 @@ check_cgnat() {
     esac
 }
 
-# SESSİZ GÜNCELLEME KONTROLÜ (Menü Açılışında)
 silent_update_check() {
-    # 6 saatte bir kontrol et (dosya varsa ve yeniyse geç)
     if [ -f "$UPDATE_CHECK_FILE" ]; then
         mtime=$(date -r "$UPDATE_CHECK_FILE" +%s)
         now=$(date +%s)
@@ -128,6 +127,7 @@ check_update() {
             mv -f "$TMP_FILE" "$SCRIPT_PATH"
             chmod +x "$SCRIPT_PATH"
             echo -e "${GREEN}[✔] Güncellendi! Yeniden başlatılıyor...${NC}"
+            rm -f "$MENU_LOCK_FILE"
             sleep 2
             exec "$SCRIPT_PATH"
         fi
@@ -139,22 +139,16 @@ check_update() {
 }
 
 # ============================================
-# DAEMON (İyileştirilmiş Sürüm)
+# DAEMON (ARKA PLAN SERVİSİ)
 # ============================================
 if [ "$1" = "--daemon" ]; then
-    # Arka planda 12 saatte bir sürüm kontrolü yapıp Telegram'a atar
     LAST_UPD_CHECK=0
-    
     logread -f 2>/dev/null | while read -r line; do
-        # Periyodik Güncelleme Kontrolü (12 saatte bir)
         NOW=$(date +%s)
         if [ $((NOW - LAST_UPD_CHECK)) -gt 43200 ]; then
              REMOTE_V=$(curl -s "$UPDATE_URL" | grep -m1 '^SCRIPT_VERSION=' | cut -d'"' -f2)
              if [ -n "$REMOTE_V" ] && [ "$REMOTE_V" != "$SCRIPT_VERSION" ]; then
-                 send_tg "🆕 Yeni Sürüm Mevcut!
-Mevcut: $SCRIPT_VERSION
-Yeni: $REMOTE_V
-Güncellemek için terminale 'sew' yazıp U seçeneğini kullanın."
+                 send_tg "🆕 Yeni Sürüm Mevcut! ($REMOTE_V)"
              fi
              LAST_UPD_CHECK=$NOW
         fi
@@ -162,19 +156,46 @@ Güncellemek için terminale 'sew' yazıp U seçeneğini kullanın."
         case "$line" in
             *"No response to 3 echo-requests"*|*"LCP terminated"*)
                 date +%s > "$STATE_FILE"
-                send_tg "🚫 Olay: PPPoE Oturumu Koptu (ISS Echo Yanıtı Yok)"
+                send_tg "🚫 Olay: PPPoE Oturumu Koptu"
                 ;;
             *"Internet access restored"*)
                 sleep 5
                 NEW_IP=$(get_wan_info)
-                send_tg "✅ Olay: İnternet Erişimi Sağlandı
-🌐 IP: $NEW_IP ($(check_cgnat "$NEW_IP"))"
+                send_tg "✅ Olay: İnternet Erişimi Sağlandı\n🌐 IP: $NEW_IP ($(check_cgnat "$NEW_IP"))"
                 rm -f "$STATE_FILE"
                 ;;
         esac
     done
     exit 0
 fi
+
+# ============================================
+# OTURUM KONTROLÜ (KZM STİLİ)
+# ============================================
+if [ -f "$MENU_LOCK_FILE" ]; then
+    OLD_MENU_PID=$(cat "$MENU_LOCK_FILE" 2>/dev/null)
+    if [ -n "$OLD_MENU_PID" ] && kill -0 "$OLD_MENU_PID" 2>/dev/null; then
+        echo -e "${YELLOW}⚠️ Betik zaten başka bir oturumda açık (PID: $OLD_MENU_PID).${NC}"
+        printf "${CYAN}Eski oturumu kapatıp buradan devam etmek ister misiniz? [e/H]: ${NC}"
+        read -r force_open
+        if [ "$force_open" = "e" ] || [ "$force_open" = "E" ]; then
+            kill -9 "$OLD_MENU_PID" 2>/dev/null
+            rm -f "$MENU_LOCK_FILE"
+            echo -e "${GREEN}Eski oturum sonlandırıldı. Yeni oturum açılıyor...${NC}"
+            sleep 1
+        else
+            echo -e "${RED}İşlem iptal edildi.${NC}"
+            exit 1
+        fi
+    else
+        # PID dosyası var ama süreç yoksa temizle
+        rm -f "$MENU_LOCK_FILE"
+    fi
+fi
+
+# Yeni oturum için kilit oluştur
+echo $$ > "$MENU_LOCK_FILE"
+trap 'rm -f "$MENU_LOCK_FILE"' EXIT
 
 # ============================================
 # ANA BAŞLANGIÇ
@@ -198,6 +219,7 @@ while true; do
     case "$choice" in
         1) "$SCRIPT_PATH" --daemon >/dev/null 2>&1 & echo $! > "$PID_FILE"; sleep 2 ;;
         2) kill "$(cat "$PID_FILE")" 2>/dev/null; rm -f "$PID_FILE"; sleep 2 ;;
+        3) kill "$(cat "$PID_FILE")" 2>/dev/null; sleep 1; "$SCRIPT_PATH" --daemon >/dev/null 2>&1 & echo $! > "$PID_FILE"; sleep 2 ;;
         4) 
             printf "Bot Token: "; read token; [ -n "$token" ] && TG_TOKEN="$token"
             printf "Chat ID: "; read cid; [ -n "$cid" ] && TG_CHATID="$cid"
@@ -206,9 +228,10 @@ while true; do
             ;;
         9)
             rm -f /opt/bin/souls /opt/bin/soulsturk /opt/bin/sew /opt/bin/sem
-            rm -f "$INIT_FILE" "$SCRIPT_PATH"
+            rm -f "$INIT_FILE" "$SCRIPT_PATH" "$MENU_LOCK_FILE"
             echo "Her şey silindi."; exit 0 ;;
         u|U) check_update ;;
         0) exit 0 ;;
+        *) sleep 1 ;;
     esac
 done
