@@ -7,7 +7,7 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.1"
+SCRIPT_VERSION="v1.2"
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
@@ -166,7 +166,7 @@ check_update() {
 print_header() {
     clear
     echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
-    echo -e "${CYAN}${BOLD}    SOULSTURK ECHO WATCHER - PRO İZLEYİCİ [${YELLOW}$SCRIPT_VERSION${CYAN}]${NC}"
+    echo -e "${CYAN}${BOLD}    SOULSTURK ECHO WATCHER - MANAGER [${YELLOW}$SCRIPT_VERSION${CYAN}]${NC}"
     echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
     echo -e " ${YELLOW}•${NC} Log kaynağı: $(detect_log_source)"
     echo -e " ${YELLOW}•${NC} Telegram: $([ -n "$TG_TOKEN" ] && [ -n "$TG_CHATID" ] && echo "${GREEN}AYARLI${NC}" || echo "${RED}AYARLANMAMIŞ${NC}")"
