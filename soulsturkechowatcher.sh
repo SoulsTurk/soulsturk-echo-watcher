@@ -144,6 +144,9 @@ check_update() {
                 rm -f "$PID_FILE"
             fi
             
+            # Güncelleme sonrası çakışmayı önlemek için LOCK dosyasını siliyoruz
+            rm -f "$LOCK_FILE"
+            
             mv -f "$TMP_FILE" "$SCRIPT_PATH"
             chmod +x "$SCRIPT_PATH"
             
