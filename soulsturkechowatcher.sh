@@ -136,7 +136,7 @@ check_update() {
         echo -e " Mevcut Sürüm: ${RED}$SCRIPT_VERSION${NC}"
         echo -e " Yeni Sürüm:   ${GREEN}$REMOTE_VERSION${NC}\n"
         
-        printf "${YELLOW}Güncellemek ister misiniz? [E/h]: ${NC}"
+        printf "${YELLOW}Güncellemek ister misiniz? [E/H]: ${NC}"
         read -r ans
         if [ "$ans" = "e" ] || [ "$ans" = "E" ] || [ -z "$ans" ]; then
             echo -e "${YELLOW}Güncelleniyor...${NC}"
@@ -342,7 +342,7 @@ create_shortcuts
 # Lock dosyası kontrolü (gelişmiş: sorarak devam et)
 if [ -f "$LOCK_FILE" ]; then
     echo -e "${YELLOW}⚠️  [UYARI] Betik zaten çalışıyor gibi görünüyor (lock dosyası mevcut).${NC}"
-    printf "Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/h]: "
+    printf "Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/H]: "
     read answer
     if [ "$answer" = "e" ] || [ "$answer" = "E" ] || [ -z "$answer" ]; then
         rm -f "$LOCK_FILE"
