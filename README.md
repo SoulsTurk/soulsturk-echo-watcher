@@ -14,6 +14,8 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi-Fi kopmaları) gibi önem
 * **🛠️ Kullanışlı Arayüz:** Telegram API, başlatma, durdurma ve test işlemlerini SSH üzerinden kolayca yapabileceğiniz interaktif bir konsol menüsüne sahiptir.
 
 ![Ana Menü](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/main-menu.png)
+![Güncelleme Kontrolü](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/update.png)
+
 
 ## 🚀 Kurulum (Tek Tıkla)
 
