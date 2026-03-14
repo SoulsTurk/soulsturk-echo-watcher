@@ -7,7 +7,7 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.6.7"   # Güncelleme bildirimi ve otomatik kontrol eklendi
+SCRIPT_VERSION="v1.6.8"   # Güncelleme bildirimi ve otomatik kontrol eklendi
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
