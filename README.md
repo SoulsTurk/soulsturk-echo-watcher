@@ -29,3 +29,43 @@ mkdir -p /opt/lib/opkg && curl -fsSL https://raw.githubusercontent.com/soulsturk
 -o /opt/lib/opkg/soulsturkechowatcher.sh && \
 chmod +x /opt/lib/opkg/soulsturkechowatcher.sh && \
 /opt/lib/opkg/soulsturkechowatcher.sh
+
+📋 Kullanım
+
+Menü açıldığında karşınıza aşağıdaki seçenekler çıkacaktır:
+
+    1) Servisi BAŞLAT – Arka planda izlemeyi başlatır (Telegram ayarları yapılmışsa).
+
+    2) Servisi DURDUR – Çalışan izleyiciyi durdurur.
+
+    3) Servisi YENİDEN BAŞLAT – Servisi durdurup tekrar başlatır.
+
+    4) Telegram Ayarlarını Yap – Bot Token ve Chat ID girin, ayarlar kaydedilir.
+
+    5) Test Bildirimi Gönder – Ayarların doğru çalışıp çalışmadığını test eder.
+
+    6) Canlı Logları İzle (elle) – Sistem loglarını anlık gösterir.
+
+    7) Otomatik Başlatmayı KUR (init.d) – Cihaz açılışında servisi otomatik başlatır.
+
+    8) Otomatik Başlatmayı KALDIR – init.d dosyasını siler.
+
+    9) TAMAMEN KALDIR (tüm dosyalar) – Betik, konfigürasyon ve kısayolları siler.
+
+    U) Güncellemeleri Kontrol Et – GitHub'daki yeni sürümü denetler.
+
+    0) Çıkış – Menüden çıkar.
+
+⚙️ Gereksinimler
+
+    Keenetic veya logread / ndmc komutlarını destekleyen bir cihaz.
+
+    curl (Telegram bildirimi ve güncelleme için).
+
+    İnternet bağlantısı (bildirim gönderebilmek için).
+
+📝 Notlar
+
+    Servis ilk kez başlatıldığında Telegram ayarları boş ise başlatma engellenir. Önce 4. menüden ayarlarınızı girin.
+
+    Kısayollar souls, soulsturk, sew, sem olarak /opt/bin altına otomatik oluşturulur. İsterseniz bu isimlerle de betiği çağırabilirsiniz.
