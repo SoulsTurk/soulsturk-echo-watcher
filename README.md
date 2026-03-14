@@ -13,6 +13,8 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi-Fi kopmaları) gibi önem
 * **📲 Dahili Güncelleme Sistemi:** Menü üzerinden tek tuşla GitHub'daki en güncel sürüme kendini otomatik olarak günceller.
 * **🛠️ Kullanışlı Arayüz:** Telegram API, başlatma, durdurma ve test işlemlerini SSH üzerinden kolayca yapabileceğiniz interaktif bir konsol menüsüne sahiptir.
 
+![Ana Menü](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/main-menu.png)
+
 ## 🚀 Kurulum (Tek Tıkla)
 
 Cihazınıza SSH ile bağlanın ve aşağıdaki komut bloğunu tek seferde kopyalayıp terminale yapıştırın. Bu işlem gerekli klasörleri oluşturacak, betiğin en güncel halini indirecek ve menüyü otomatik olarak başlatacaktır:
