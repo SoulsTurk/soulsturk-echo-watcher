@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # ============================================
-# SOULSTURK ECHO WATCHER - MANAGER (IP, KESİNTİ SÜRESİ + OTO GÜNCELLEME)
+# SOULSTURK ECHO WATCHER - MANAGER (IP, KESİNTİ SÜRESİ + OTO GÜNCELLEME + BİLDİRİM)
 # ============================================
 
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.6.6"
+SCRIPT_VERSION="v1.6.7"   # Güncelleme bildirimi ve otomatik kontrol eklendi
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
@@ -31,6 +31,9 @@ LOCK_FILE="/tmp/soulsturkechowatcher.lock"
 LAST_LOG_FILE="/tmp/soulsturkechowatcher.lastlog"
 STATE_FILE="/tmp/soulsturkechowatcher.state"
 LAST_IP_FILE="/tmp/soulsturkechowatcher.lastip"
+# Güncelleme kontrolü için dosyalar
+LAST_UPDATE_CHECK_FILE="$CONF_DIR/last_update_check"
+UPDATE_AVAILABLE_FILE="$CONF_DIR/update_available"
 
 # --- Varsayılanlar ---
 TG_TOKEN=""
@@ -103,12 +106,65 @@ check_cgnat() {
     esac
 }
 
+# Arka planda güncelleme kontrolü (günde 1 kez, Telegram bildirimli)
+check_updates_background() {
+    # Son kontrol zamanını kontrol et (günde bir kez)
+    NOW=$(date +%s)
+    CHECK_INTERVAL=86400 # 24 saat
+
+    if [ -f "$LAST_UPDATE_CHECK_FILE" ]; then
+        LAST_CHECK=$(cat "$LAST_UPDATE_CHECK_FILE")
+        DIFF=$((NOW - LAST_CHECK))
+        if [ $DIFF -lt $CHECK_INTERVAL ]; then
+            return # Daha kontrol zamanı gelmedi
+        fi
+    fi
+
+    # Kontrol zamanını güncelle
+    echo "$NOW" > "$LAST_UPDATE_CHECK_FILE"
+
+    # Güncelleme kontrolü yap
+    TMP_FILE="/tmp/soulsturkechowatcher_update_check.tmp"
+    curl -s "$UPDATE_URL" -o "$TMP_FILE"
+    if [ ! -f "$TMP_FILE" ] || [ ! -s "$TMP_FILE" ]; then
+        rm -f "$TMP_FILE"
+        return
+    fi
+
+    REMOTE_VERSION=$(grep -m1 '^SCRIPT_VERSION=' "$TMP_FILE" 2>/dev/null | cut -d'"' -f2)
+    if [ -z "$REMOTE_VERSION" ]; then
+        rm -f "$TMP_FILE"
+        return
+    fi
+
+    if [ "$SCRIPT_VERSION" != "$REMOTE_VERSION" ]; then
+        # Yeni sürüm var
+        echo "$REMOTE_VERSION" > "$UPDATE_AVAILABLE_FILE"
+        # Telegram bildirimi gönder (eğer ayarlıysa)
+        if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHATID" ]; then
+            MSG="🔔 *Soulsturk Echo Watcher güncellemesi!*
+Mevcut sürüm: $SCRIPT_VERSION
+Yeni sürüm: $REMOTE_VERSION
+
+Güncellemek için menüde 'U' tuşuna basın veya şu komutu çalıştırın:
+$SCRIPT_PATH"
+            send_tg "$MSG"
+        fi
+    else
+        # Aynı sürüm, güncelleme dosyasını sil
+        rm -f "$UPDATE_AVAILABLE_FILE"
+    fi
+
+    rm -f "$TMP_FILE"
+}
+
+# İnteraktif güncelleme kontrolü (menüden çağrılır)
 check_update() {
     clear
     echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
     echo -e "${CYAN}${BOLD}    GÜNCELLEME KONTROLÜ${NC}"
     echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
-    echo -e "${YELLOW}🌐 Github Sunucuya bağlanılıyor...${NC}"
+    echo -e "${YELLOW}🌐 Sunucuya bağlanılıyor...${NC}"
     
     TMP_FILE="/tmp/soulsturkechowatcher_update.sh"
     
@@ -132,11 +188,11 @@ check_update() {
     fi
     
     if [ "$SCRIPT_VERSION" != "$REMOTE_VERSION" ]; then
-        echo -e "${GREEN}✅ Github üzerinde Yeni sürüm bulundu!${NC}"
+        echo -e "${GREEN}✅ Yeni sürüm bulundu!${NC}"
         echo -e " Mevcut Sürüm: ${RED}$SCRIPT_VERSION${NC}"
         echo -e " Yeni Sürüm:   ${GREEN}$REMOTE_VERSION${NC}\n"
         
-        printf "${YELLOW}Güncellemek ister misiniz? [E/H]: ${NC}"
+        printf "${YELLOW}Güncellemek ister misiniz? [E/h]: ${NC}"
         read -r ans
         if [ "$ans" = "e" ] || [ "$ans" = "E" ] || [ -z "$ans" ]; then
             echo -e "${YELLOW}Güncelleniyor...${NC}"
@@ -147,7 +203,6 @@ check_update() {
                 was_running=true
                 kill "$(cat "$PID_FILE")" 2>/dev/null
                 rm -f "$PID_FILE"
-                echo -e "Servis durduruldu."
             fi
             
             # Güncelleme sonrası çakışmayı önlemek için LOCK dosyasını siliyoruz
@@ -156,21 +211,16 @@ check_update() {
             mv -f "$TMP_FILE" "$SCRIPT_PATH"
             chmod +x "$SCRIPT_PATH"
             
+            # Güncelleme bildirimi dosyasını temizle
+            rm -f "$UPDATE_AVAILABLE_FILE"
+            
             # Güncelleme öncesi servis çalışıyorsa yeniden başlat
             if [ "$was_running" = true ]; then
-                echo -e "Servis yeniden başlatılıyor..."
                 "$SCRIPT_PATH" --daemon >/dev/null 2>&1 &
-                NEW_PID=$!
-                echo $NEW_PID > "$PID_FILE"
-                # Kısa bir bekleme ve kontrol
-                sleep 2
-                if kill -0 $NEW_PID 2>/dev/null; then
-                    echo -e "${GREEN}✅ Güncelleme tamamlandı! Servis otomatik olarak yeniden başlatıldı (PID: $NEW_PID).${NC}"
-                else
-                    echo -e "${RED}❌ Güncelleme tamamlandı ancak servis başlatılamadı! Lütfen manuel başlatın (menü 1).${NC}"
-                fi
+                echo $! > "$PID_FILE"
+                echo -e "${GREEN}✅ Güncelleme tamamlandı! Servis otomatik olarak yeniden başlatıldı.${NC}"
             else
-                echo -e "${GREEN}✅ Güncelleme tamamlandı! (Servis zaten çalışmıyordu, menüden başlatın. Menü 1)${NC}"
+                echo -e "${GREEN}✅ Güncelleme tamamlandı! (Servis zaten çalışmıyordu)${NC}"
             fi
             
             sleep 2
@@ -183,6 +233,7 @@ check_update() {
     else
         echo -e "${GREEN}✅ Harika! Zaten en güncel sürümü kullanıyorsunuz ($SCRIPT_VERSION).${NC}"
         rm -f "$TMP_FILE"
+        rm -f "$UPDATE_AVAILABLE_FILE"  # Güncelleme varsa sil
         sleep 3
     fi
 }
@@ -194,8 +245,12 @@ print_header() {
     echo -e "${BLUE}${BOLD}────────────────────────────────────────────────────${NC}"
     echo -e " ${YELLOW}📋${NC} Log kaynağı: $(detect_log_source)"
     echo -e " ${YELLOW}📱${NC} Telegram: $([ -n "$TG_TOKEN" ] && [ -n "$TG_CHATID" ] && echo "${GREEN}AYARLI${NC}" || echo "${RED}AYARLANMAMIŞ${NC}")"
-    echo -e " ${YELLOW}⚙️${NC}  Servis durumu: $(status_check && echo "${GREEN}ÇALIŞIYOR${NC}" || echo "${RED}ÇALIŞMIYOR${NC}")"
+    echo -e " ${YELLOW}⚙️${NC}  Servis durumu: $(status_check && echo "${GREEN}ÇALIŞIYOR${NC}" || echo "${RED}DURMUŞ${NC}")"
     echo -e " ${YELLOW}🔄${NC} Otomatik başlatma: $([ -f "$INIT_FILE" ] && echo "${GREEN}AKTİF${NC}" || echo "${RED}PASİF${NC}")"
+    if [ -f "$UPDATE_AVAILABLE_FILE" ]; then
+        NEW_VER=$(cat "$UPDATE_AVAILABLE_FILE")
+        echo -e " ${RED}⚠️${NC} ${YELLOW}Yeni güncelleme mevcut:${NC} ${GREEN}$NEW_VER${NC} ${CYAN}(U tuşuna basın)${NC}"
+    fi
     echo -e "${BLUE}${BOLD}────────────────────────────────────────────────────${NC}"
 }
 
@@ -339,10 +394,13 @@ fi
 # Kısayolları her başlangıçta kontrol et
 create_shortcuts
 
+# Arka planda güncelleme kontrolü yap (günde bir kez)
+check_updates_background
+
 # Lock dosyası kontrolü (gelişmiş: sorarak devam et)
 if [ -f "$LOCK_FILE" ]; then
     echo -e "${YELLOW}⚠️  [UYARI] Betik zaten çalışıyor gibi görünüyor (lock dosyası mevcut).${NC}"
-    printf "Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/H]: "
+    printf "Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/h]: "
     read answer
     if [ "$answer" = "e" ] || [ "$answer" = "E" ] || [ -z "$answer" ]; then
         rm -f "$LOCK_FILE"
@@ -488,7 +546,7 @@ INITEOF
             echo -e " • init.d dosyasını siler"
             echo -e " • Konfigürasyon klasörünü (${CONF_DIR}) siler"
             echo -e " • /opt/bin üzerindeki tüm kısayolları (souls, sew vb.) siler"
-            echo -e " • Ve bu betik dosyasını (${SCRIPT_PATH}) siler"
+            echo -e " • VE SON OLARAK bu betik dosyasını (${SCRIPT_PATH}) siler"
             echo ""
             printf "Devam etmek için ${RED}${BOLD}EVET${NC} yazın (iptal için boş bırakın): "
             read confirm
