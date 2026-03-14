@@ -1,13 +1,8 @@
 # 📡 Soulsturk Echo Watcher
 
-Keenetic cihazlar (ve log/ndmc altyapısını destekleyen sistemler) için geliştirilmiş, **flood korumalı**, akıllı bir PPPoE/WAN bağlantı izleme ve Telegram bildirim betiğidir. 
-
-Klasik izleyicilerin aksine, "client disconnected" (Wi‑Fi kopmaları) gibi önemsiz logları filtreler ve sadece gerçek internet kesintilerinde devreye girer.
-
-🚀 **Neden Bu Araca İhtiyaç Var?**
-Keenetic router'lar üzerinde çalışan standart Telegram botu, ISP kaynaklı anlık dalgalanmaları veya 3 adet "Echo No Response" (LCP yankı yanıtı alınamaması) hatasını doğrudan "Bağlantı Koptu" olarak raporlar. Ancak çoğu durumda bu, hattın tamamen düşmesi değil, sadece anlık bir paket kaybı veya ISP tarafındaki geçici bir yanıtsızlık durumudur.
-
-Soulsturk Echo Watcher, bu karmaşıklığı gidermek için geliştirilmiştir:
+🚀 **Neden Bu Araca İhtiyaç Var?:**
+Keenetic router'lar üzerinde çalışan standart Telegram botu, ISP kaynaklı 3 adet "Echo No Response" (LCP yankı yanıtı alınamaması) hatasını doğrudan "Bağlantı Koptu" olarak raporlar. Ancak çoğu durumda bu, hattın tamamen düşmesi değil, sadece anlık bir paket kaybı veya ISP tarafındaki geçici bir yanıtsızlık durumudur.
+Soulsturk Echo Watcher, bu karmaşıklığı gidermek için geliştirilmiştir.
 
 ## ✨ Özellikler
 
