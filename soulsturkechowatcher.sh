@@ -7,7 +7,7 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.5"
+SCRIPT_VERSION="v1.6"
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
@@ -381,14 +381,19 @@ while true; do
             sleep 2
             ;;
         3)
-            if status_check; then
-                kill "$(cat "$PID_FILE")" 2>/dev/null
-                rm -f "$PID_FILE"
-                sleep 1
+            # Yeniden başlatmadan önce token kontrolü yap
+            if [ -z "$TG_TOKEN" ] || [ -z "$TG_CHATID" ]; then
+                echo -e "${RED}❌ Önce Telegram ayarlarını yapın (menü 4).${NC}"
+            else
+                if status_check; then
+                    kill "$(cat "$PID_FILE")" 2>/dev/null
+                    rm -f "$PID_FILE"
+                    sleep 1
+                fi
+                "$SCRIPT_PATH" --daemon >/dev/null 2>&1 &
+                echo $! > "$PID_FILE"
+                echo -e "${GREEN}✅ Servis yeniden başlatıldı.${NC}"
             fi
-            "$SCRIPT_PATH" --daemon >/dev/null 2>&1 &
-            echo $! > "$PID_FILE"
-            echo -e "${GREEN}✅ Servis yeniden başlatıldı.${NC}"
             sleep 2
             ;;
         4)
