@@ -25,7 +25,7 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi‑Fi kopmaları) gibi ön
 
 **Güncelleme bulunduğunda size sorar ve onayınızla güncelleme işlemini gerçekleştirir.**
 
-![Güncelleme Kontrolü 2](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/update2.jpg)
+![Güncelleme Onay](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/update2.png)
 
 **Eğer aynı betik birden fazla kez çalıştırılmaya çalışılırsa, lock dosyası sayesinde uyarı verir ve çakışmayı engeller.**
 
