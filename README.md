@@ -1,8 +1,8 @@
 # 📡 Soulsturk Echo Watcher
 
-🚀 **Neden Bu Araca İhtiyaç Var?:**
-Keenetic router'lar üzerinde çalışan standart Telegram botu, ISP kaynaklı 3 adet "Echo No Response" (LCP yankı yanıtı alınamaması) hatasını doğrudan "Bağlantı Koptu" olarak raporlar. Ancak çoğu durumda bu, hattın tamamen düşmesi değil, sadece anlık bir paket kaybı veya ISP tarafındaki geçici bir yanıtsızlık durumudur.
-Soulsturk Echo Watcher, bu karmaşıklığı gidermek için geliştirilmiştir.
+## 🚀 **Neden Bu Araca İhtiyaç Var?:**
+Keenetic router'lar üzerinde çalışan standart Telegram botu, ISP kaynaklı 3 adet "Echo No Response" (LCP yankı yanıtı alınamaması) durumunda doğrudan "Bağlantı Koptu" olarak raporlar. Ancak çoğu durumda bu, hattın tamamen düşmesi değil, ISP tarafındaki geçici bir yanıtsızlık durumudur.
+Soulsturk Echo Watcher, bu karmaşıklığı gidermek için geliştirilmiştir. Sadece "No response to 3 echo-requests" kaynaklı IP yenilemelerini bildirir böylece sürekli log kayıtlarına bakmak zorunda kalmazsınız.
 
 ## ✨ Özellikler
 
