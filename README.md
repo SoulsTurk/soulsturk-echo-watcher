@@ -35,6 +35,46 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi‑Fi kopmaları) gibi ön
 
 ![Tam Kaldırma](https://github.com/SoulsTurk/soulsturk-echo-watcher/raw/main/docs/images/delete.jpg)
 
+📋 Kullanım
+
+Menü açıldığında karşınıza aşağıdaki seçenekler çıkacaktır:
+
+    1) Servisi BAŞLAT – Arka planda izlemeyi başlatır (Telegram ayarları yapılmışsa).
+
+    2) Servisi DURDUR – Çalışan izleyiciyi durdurur.
+
+    3) Servisi YENİDEN BAŞLAT – Servisi durdurup tekrar başlatır (Telegram ayarları gerektirir).
+
+    4) Telegram Ayarlarını Yap – Bot Token ve Chat ID girin, ayarlar kaydedilir.
+
+    5) Test Bildirimi Gönder – Ayarların doğru çalışıp çalışmadığını test eder.
+
+    6) Canlı Logları İzle (elle) – Sistem loglarını anlık gösterir.
+
+    7) Otomatik Başlatmayı KUR (init.d) – Cihaz açılışında servisi otomatik başlatır.
+
+    8) Otomatik Başlatmayı KALDIR – init.d dosyasını siler.
+
+    9) TAMAMEN KALDIR (tüm dosyalar) – Betik, konfigürasyon ve kısayolları siler.
+
+    U) Güncellemeleri Kontrol Et – GitHub'daki yeni sürümü denetler.
+
+    0) Çıkış – Menüden çıkar.
+
+⚙️ Gereksinimler
+
+    Keenetic veya logread / ndmc komutlarını destekleyen bir cihaz.
+
+    curl (Telegram bildirimi ve güncelleme için).
+
+    İnternet bağlantısı (bildirim gönderebilmek için).
+
+📝 Notlar
+
+    Servis ilk kez başlatıldığında Telegram ayarları boş ise başlatma engellenir. Önce 4. menüden ayarlarınızı girin.
+
+    Kısayollar souls, soulsturk, sew, sem olarak /opt/bin altına otomatik oluşturulur. İsterseniz bu isimlerle de betiği çağırabilirsiniz.
+
 ## 🚀 Kurulum (Tek Tıkla)
 
 Cihazınıza SSH ile bağlanın ve aşağıdaki komut bloğunu tek seferde kopyalayıp terminale yapıştırın. Bu işlem gerekli klasörleri oluşturacak, betiğin en güncel halini indirecek ve menüyü otomatik olarak başlatacaktır:
