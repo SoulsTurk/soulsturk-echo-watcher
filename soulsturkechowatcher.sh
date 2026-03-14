@@ -7,7 +7,7 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.6.2"   # Sürüm yükseltildi (otomatik başlatma eklendi)
+SCRIPT_VERSION="v1.6.3"
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
@@ -147,6 +147,7 @@ check_update() {
                 was_running=true
                 kill "$(cat "$PID_FILE")" 2>/dev/null
                 rm -f "$PID_FILE"
+                echo -e "Servis durduruldu."
             fi
             
             # Güncelleme sonrası çakışmayı önlemek için LOCK dosyasını siliyoruz
@@ -157,9 +158,17 @@ check_update() {
             
             # Güncelleme öncesi servis çalışıyorsa yeniden başlat
             if [ "$was_running" = true ]; then
+                echo -e "Servis yeniden başlatılıyor..."
                 "$SCRIPT_PATH" --daemon >/dev/null 2>&1 &
-                echo $! > "$PID_FILE"
-                echo -e "${GREEN}✅ Güncelleme tamamlandı! Servis otomatik olarak yeniden başlatıldı.${NC}"
+                NEW_PID=$!
+                echo $NEW_PID > "$PID_FILE"
+                # Kısa bir bekleme ve kontrol
+                sleep 2
+                if kill -0 $NEW_PID 2>/dev/null; then
+                    echo -e "${GREEN}✅ Güncelleme tamamlandı! Servis otomatik olarak yeniden başlatıldı (PID: $NEW_PID).${NC}"
+                else
+                    echo -e "${RED}❌ Güncelleme tamamlandı ancak servis başlatılamadı! Lütfen manuel başlatın (menü 1).${NC}"
+                fi
             else
                 echo -e "${GREEN}✅ Güncelleme tamamlandı! (Servis zaten çalışmıyordu)${NC}"
             fi
