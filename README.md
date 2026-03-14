@@ -1,4 +1,4 @@
-# 📡 Soulsturk Echo Watcher
+# 📡 Soulsturk Echo Watcher Manager
 
 ## 🚀 **Neden Bu Araca İhtiyaç Var?:**
 Keenetic router'lar üzerinde çalışan standart Telegram botu, ISP kaynaklı 3 adet "Echo No Response" (LCP yankı yanıtı alınamaması) durumunda doğrudan "Bağlantı Koptu" olarak raporlar. Ancak çoğu durumda bu, hattın tamamen düşmesi değil, ISP tarafındaki geçici bir yanıtsızlık durumudur.
