@@ -7,20 +7,19 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.4"
+SCRIPT_VERSION="v1.5"
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
-# --- Renkler (İyileştirilmiş) ---
-RED='\033[1;31m'          # Kırmızı (Bold)
-GREEN='\033[1;32m'        # Yeşil (Bold)
-YELLOW='\033[1;33m'       # Sarı (Bold)
-CYAN='\033[1;36m'         # Cyan (Bold)
-BLUE='\033[1;34m'         # Mavi (Bold)
-MAGENTA='\033[1;35m'      # Magenta (Bold)
-WHITE='\033[1;37m'        # Beyaz (Bold)
-NC='\033[0m'              # Renk sıfırlama
-BOLD='\033[1m'            # Kalın (Bold)
+# --- Renkler (Orijinal) ---
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+NC='\033[0m'
+BOLD='\033[1m'
 
 # --- Yollar ---
 SCRIPT_PATH="/opt/lib/opkg/soulsturkechowatcher.sh"
@@ -106,9 +105,9 @@ check_cgnat() {
 
 check_update() {
     clear
-    echo -e "${MAGENTA}${BOLD}════════════════════════════════════════════════════${NC}"
-    echo -e "${CYAN}${BOLD}          GÜNCELLEME KONTROLÜ${NC}"
-    echo -e "${MAGENTA}${BOLD}════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}${BOLD}    GÜNCELLEME KONTROLÜ${NC}"
+    echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
     echo -e "${YELLOW}🌐 Sunucuya bağlanılıyor...${NC}"
     
     TMP_FILE="/tmp/soulsturkechowatcher_update.sh"
@@ -147,6 +146,7 @@ check_update() {
                 rm -f "$PID_FILE"
             fi
             
+            # Güncelleme sonrası çakışmayı önlemek için LOCK dosyasını siliyoruz
             rm -f "$LOCK_FILE"
             
             mv -f "$TMP_FILE" "$SCRIPT_PATH"
@@ -171,12 +171,12 @@ check_update() {
 print_header() {
     clear
     echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════${NC}"
-    echo -e "${WHITE}${BOLD}    SOULSTURK ECHO WATCHER - MANAGER [${YELLOW}$SCRIPT_VERSION${WHITE}]${NC}"
+    echo -e "${CYAN}${BOLD}    SOULSTURK ECHO WATCHER - MANAGER [${YELLOW}$SCRIPT_VERSION${CYAN}]${NC}"
     echo -e "${BLUE}${BOLD}────────────────────────────────────────────────────${NC}"
-    echo -e " ${CYAN}📋${NC} Log kaynağı: ${GREEN}$(detect_log_source)${NC}"
-    echo -e " ${CYAN}📱${NC} Telegram: $([ -n "$TG_TOKEN" ] && [ -n "$TG_CHATID" ] && echo "${GREEN}AYARLI${NC}" || echo "${RED}AYARLANMAMIŞ${NC}")"
-    echo -e " ${CYAN}⚙️${NC}  Servis durumu: $(status_check && echo "${GREEN}ÇALIŞIYOR${NC}" || echo "${RED}DURMUŞ${NC}")"
-    echo -e " ${CYAN}🔄${NC} Otomatik başlatma: $([ -f "$INIT_FILE" ] && echo "${GREEN}AKTİF${NC}" || echo "${RED}PASİF${NC}")"
+    echo -e " ${YELLOW}📋${NC} Log kaynağı: $(detect_log_source)"
+    echo -e " ${YELLOW}📱${NC} Telegram: $([ -n "$TG_TOKEN" ] && [ -n "$TG_CHATID" ] && echo "${GREEN}AYARLI${NC}" || echo "${RED}AYARLANMAMIŞ${NC}")"
+    echo -e " ${YELLOW}⚙️${NC}  Servis durumu: $(status_check && echo "${GREEN}ÇALIŞIYOR${NC}" || echo "${RED}DURMUŞ${NC}")"
+    echo -e " ${YELLOW}🔄${NC} Otomatik başlatma: $([ -f "$INIT_FILE" ] && echo "${GREEN}AKTİF${NC}" || echo "${RED}PASİF${NC}")"
     echo -e "${BLUE}${BOLD}────────────────────────────────────────────────────${NC}"
 }
 
@@ -323,7 +323,7 @@ create_shortcuts
 # Lock dosyası kontrolü (gelişmiş: sorarak devam et)
 if [ -f "$LOCK_FILE" ]; then
     echo -e "${YELLOW}⚠️  [UYARI] Betik zaten çalışıyor gibi görünüyor (lock dosyası mevcut).${NC}"
-    printf "${YELLOW}Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/h]: ${NC}"
+    printf "Mevcut oturumu kapatıp yeni oturum başlatmak ister misiniz? [E/h]: "
     read answer
     if [ "$answer" = "e" ] || [ "$answer" = "E" ] || [ -z "$answer" ]; then
         rm -f "$LOCK_FILE"
@@ -339,7 +339,7 @@ trap 'rm -f "$LOCK_FILE"' EXIT
 while true; do
     print_header
 
-    echo -e "${WHITE}${BOLD}  ANA MENÜ${NC}"
+    echo -e "${CYAN}${BOLD}  ANA MENÜ${NC}"
     echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
     echo -e "  ${YELLOW}➤ 1)${NC} Servisi BAŞLAT"
     echo -e "  ${YELLOW}➤ 2)${NC} Servisi DURDUR"
@@ -353,7 +353,7 @@ while true; do
     echo -e "  ${YELLOW}➤ U)${NC} ${MAGENTA}Güncellemeleri Kontrol Et${NC}"
     echo -e "  ${YELLOW}➤ 0)${NC} Çıkış"
     echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
-    printf "${GREEN}${BOLD}Seçiminiz${NC} [0-9, U]: "
+    printf "${GREEN}Seçiminiz${NC} [0-9, U]: "
     read choice
 
     case "$choice" in
@@ -393,9 +393,7 @@ while true; do
             ;;
         4)
             clear
-            echo -e "${CYAN}${BOLD}════════════════════════════════════════════════════${NC}"
-            echo -e "${WHITE}${BOLD}          TELEGRAM AYARLARI${NC}"
-            echo -e "${CYAN}${BOLD}════════════════════════════════════════════════════${NC}"
+            echo -e "${CYAN}${BOLD}[ TELEGRAM AYARLARI ]${NC}"
             echo -e " Mevcut Token: ${TG_TOKEN:-${RED}[BOŞ]${NC}}"
             echo -e " Mevcut ChatID: ${TG_CHATID:-${RED}[BOŞ]${NC}}"
             echo ""
@@ -426,7 +424,7 @@ Zaman: $TIME_NOW"
             sleep 2
             ;;
         6)
-            echo -e "${CYAN}📋  CANLI LOG İZLEME - Çıkmak için 'q' tuşuna basın ${NC}"
+            echo -e "${CYAN}📋 CANLI LOG İZLEME - Çıkmak için q tuşuna basın${NC}"
             if command -v logread >/dev/null 2>&1; then
                 logread -f | less
             elif command -v ndmc >/dev/null 2>&1; then
@@ -477,6 +475,7 @@ INITEOF
                 fi
                 rm -f "$INIT_FILE"
                 rm -rf "$CONF_DIR"
+                # Kısayolları sil
                 rm -f /opt/bin/souls /opt/bin/soulsturk /opt/bin/sew /opt/bin/sem
                 echo -e "${GREEN}✅ Tüm dosyalar ve kısayollar silindi. Betik sonlanıyor.${NC}"
                 rm -f "$LOCK_FILE"
