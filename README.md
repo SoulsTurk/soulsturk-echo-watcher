@@ -13,44 +13,6 @@ Klasik izleyicilerin aksine, "client disconnected" (Wi‑Fi kopmaları) gibi ön
 * **📲 Dahili Güncelleme Sistemi:** Menü üzerinden tek tuşla GitHub'daki en güncel sürüme kendini otomatik olarak günceller.
 * **🛠️ Kullanışlı Arayüz:** Telegram API, başlatma, durdurma ve test işlemlerini SSH üzerinden kolayca yapabileceğiniz interaktif bir konsol menüsüne sahiptir.
 
-* 📋 Kullanım
-Menü açıldığında karşınıza aşağıdaki seçenekler çıkacaktır:
-
-Servisi BAŞLAT – Arka planda izlemeyi başlatır (Telegram ayarları yapılmışsa).
-
-Servisi DURDUR – Çalışan izleyiciyi durdurur.
-
-Servisi YENİDEN BAŞLAT – Servisi durdurup tekrar başlatır (Telegram ayarları gerektirir).
-
-Telegram Ayarlarını Yap – Bot Token ve Chat ID girin, ayarlar kaydedilir.
-
-Test Bildirimi Gönder – Ayarların doğru çalışıp çalışmadığını test eder.
-
-Canlı Logları İzle (elle) – Sistem loglarını anlık gösterir.
-
-Otomatik Başlatmayı KUR (init.d) – Cihaz açılışında servisi otomatik başlatır.
-
-Otomatik Başlatmayı KALDIR – init.d dosyasını siler.
-
-TAMAMEN KALDIR (tüm dosyalar) – Betik, konfigürasyon ve kısayolları siler.
-
-Güncellemeleri Kontrol Et – GitHub'daki yeni sürümü denetler.
-
-Çıkış – Menüden çıkar.
-
-⚙️ Gereksinimler
-Keenetic veya logread / ndmc komutlarını destekleyen bir cihaz.
-
-curl (Telegram bildirimi ve güncelleme için).
-
-İnternet bağlantısı (bildirim gönderebilmek için).
-
-📝 Notlar
-[!IMPORTANT]
-Servis ilk kez başlatıldığında Telegram ayarları boş ise başlatma engellenir. Önce 4. menüden ayarlarınızı girin.
-
-Kısayollar souls, soulsturk, sew, sem olarak /opt/bin altına otomatik oluşturulur. İsterseniz bu isimlerle de betiği çağırabilirsiniz.
-
 ## 🖼️ Ekran Görüntüleri
 
 **Ana menüde servis durumunu, Telegram ayarlarını ve otomatik başlatma durumunu tek bakışta görebilirsiniz.**
