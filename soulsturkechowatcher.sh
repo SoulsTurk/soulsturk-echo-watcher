@@ -7,7 +7,7 @@
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/opt/sbin:/opt/bin:$PATH"
 
 # --- Sürüm ve Güncelleme Ayarları ---
-SCRIPT_VERSION="v1.0.1"
+SCRIPT_VERSION="v.1.0.2"
 # Güncelleme için GitHub RAW Linki
 UPDATE_URL="https://raw.githubusercontent.com/soulsturk/soulsturk-echo-watcher/main/soulsturkechowatcher.sh"
 
@@ -241,7 +241,7 @@ if [ "$1" = "--daemon" ]; then
                         else
                             REASON="LCP bağlantısı sonlandırıldı."
                         fi
-                        printf "🚫 Olay: PPPoE Oturumu Koptu\nDurum: %s\nZaman: %s" \
+                        printf "🚫 Olay: PPPoE Oturumu Koptu\n📋 Durum: %s\n🕐 Zaman: %s" \
                             "$REASON" "$TIME_NOW" > "$PENDING_MSG_FILE"
                     fi
                     ;;
@@ -249,9 +249,9 @@ if [ "$1" = "--daemon" ]; then
                     # Sadece echo-request kaynaklı kopma kuyruğu varsa bildirim gönder
                     # (Keenetic'in kendi botu genel reconnect'leri zaten bildiriyor)
                     if [ -f "$PENDING_MSG_FILE" ]; then
+                        DOWNTIME=$(get_downtime)
                         sleep 5
                         TIME_NOW=$(date "+%d.%m.%Y %H:%M:%S")
-                        DOWNTIME=$(get_downtime)
                         NEW_IP=$(get_wan_info)
                         OLD_IP=$(cat "$LAST_IP_FILE" 2>/dev/null)
                         echo "$NEW_IP" > "$LAST_IP_FILE"
@@ -268,8 +268,8 @@ if [ "$1" = "--daemon" ]; then
                         flush_pending_msg
 
                         MSG="✅ Olay: İnternet Erişimi Sağlandı
-Durum: Bağlantı tekrar kuruldu.
-Zaman: $TIME_NOW
+📋 Durum: Bağlantı tekrar kuruldu.
+🕐 Zaman: $TIME_NOW
 ⏱️ Kesinti Süresi: $DOWNTIME
 🌐 IP Adresi: $NEW_IP ($CGNAT_STAT)
 🔄 IP Durumu: $IP_CHANGE"
@@ -312,7 +312,7 @@ Zaman: $TIME_NOW
                                 else
                                     REASON="LCP bağlantısı sonlandırıldı."
                                 fi
-                                printf "🚫 Olay: PPPoE Oturumu Koptu\nDurum: %s\nZaman: %s" \
+                                printf "🚫 Olay: PPPoE Oturumu Koptu\n📋 Durum: %s\n🕐 Zaman: %s" \
                                     "$REASON" "$TIME_NOW" > "$PENDING_MSG_FILE"
                             fi
                             echo "$line" >> "$LAST_LOG_FILE"
@@ -323,9 +323,9 @@ Zaman: $TIME_NOW
                         # (Keenetic'in kendi botu genel reconnect'leri zaten bildiriyor)
                         if ! grep -Fq "$line" "$LAST_LOG_FILE" 2>/dev/null; then
                             if [ -f "$PENDING_MSG_FILE" ]; then
+                                DOWNTIME=$(get_downtime)
                                 sleep 5
                                 TIME_NOW=$(date "+%d.%m.%Y %H:%M:%S")
-                                DOWNTIME=$(get_downtime)
                                 NEW_IP=$(get_wan_info)
                                 OLD_IP=$(cat "$LAST_IP_FILE" 2>/dev/null)
                                 echo "$NEW_IP" > "$LAST_IP_FILE"
@@ -342,8 +342,8 @@ Zaman: $TIME_NOW
                                 flush_pending_msg
 
                                 MSG="✅ Olay: İnternet Erişimi Sağlandı
-Durum: Bağlantı tekrar kuruldu.
-Zaman: $TIME_NOW
+📋 Durum: Bağlantı tekrar kuruldu.
+🕐 Zaman: $TIME_NOW
 ⏱️ Kesinti Süresi: $DOWNTIME
 🌐 IP Adresi: $NEW_IP ($CGNAT_STAT)
 🔄 IP Durumu: $IP_CHANGE"
@@ -473,8 +473,8 @@ CONFEOF
             else
                 TIME_NOW=$(date "+%d.%m.%Y %H:%M:%S")
                 MSG="🔔 Olay: Test Bildirimi
-Durum: Soulsturk Echo Watcher bildirim sistemi sorunsuz çalışıyor.
-Zaman: $TIME_NOW"
+📋 Durum: Soulsturk Echo Watcher bildirim sistemi sorunsuz çalışıyor.
+🕐 Zaman: $TIME_NOW"
                 send_tg "$MSG"
                 echo -e "${GREEN}✅ Test mesajı gönderildi.${NC}"
             fi
